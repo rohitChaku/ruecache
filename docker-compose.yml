@@ -1,0 +1,41 @@
+version: '3'
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    expose:
+      - 6379
+    networks:
+      - mynet
+
+  ruecache:
+    build:
+      context: .
+    hostname: ruecache
+    deploy:
+      mode: replicated
+      replicas: 2
+    expose:
+      - 8080
+    environment:
+      - rhost=redis
+    depends_on:
+      - redis
+    networks:
+      - mynet
+
+  nginx_proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - ruecache
+    networks:
+      - mynet
+
+networks:
+  mynet:
