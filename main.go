@@ -38,7 +38,11 @@ func setHandler(c *gin.Context) {
 func main() {
 
 	redisHost := os.Getenv("rhost")
-	client, err := rueidis.NewClient(rueidis.ClientOption{InitAddress: []string{redisHost + ":6379"}})
+	client, err := rueidis.NewClient(
+		rueidis.ClientOption{
+			InitAddress:           []string{redisHost + ":6379"},
+			ClientTrackingOptions: []string{"BCAST"}},
+	)
 	if err != nil {
 		panic(err)
 	}
